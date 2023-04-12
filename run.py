@@ -12,7 +12,9 @@ with open('microsoft.html', 'r', encoding='utf-8') as f:
 
     for emoji in data:
         path = emoji['href']
-        response = requests.get(f'https://emojipedia.org{path}')
+        response = requests.get(f'https://emojipedia.org{path}', headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
+        })
         soup = bs4.BeautifulSoup(response.text, 'html.parser')
 
         # Find the emoji name
