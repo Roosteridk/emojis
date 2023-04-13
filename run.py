@@ -5,7 +5,7 @@ import time
 
 emojis = []
 
-with open('microsoft.html', 'r', encoding='utf-8') as f:
+with open('apple.html', 'r', encoding='utf-8') as f:
     soup = bs4.BeautifulSoup(f.read(), 'html.parser')
 
     # Find all the emoji names
