@@ -1,6 +1,7 @@
 import bs4
 import json
 import requests
+import time
 
 emojis = []
 
@@ -12,14 +13,23 @@ with open('microsoft.html', 'r', encoding='utf-8') as f:
 
     for emoji in data:
         path = emoji['href']
-        response = requests.get(f'https://emojipedia.org{path}', headers={
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
-        })
+
+        while True:
+            try:
+                response = requests.get(f'https://emojipedia.org{path}', headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36'
+                }, timeout=10)
+                response.raise_for_status()
+            except:  # noqa: E722
+                time.sleep(5)
+                continue
+            break
+
         soup = bs4.BeautifulSoup(response.text, 'html.parser')
 
         # Find the emoji name
-        emoji_char = soup.select_one('h1 > span').text
-        emoji_name = soup.select_one('h1').text.strip()
+        emoji_char = soup.select_one('#emoji-copy').attrs['value']
+        emoji_name = emoji.select_one('img').attrs['alt']
         emoji_desc = soup.select_one('.description > p').text.strip()
 
         emojis.append({
@@ -27,6 +37,8 @@ with open('microsoft.html', 'r', encoding='utf-8') as f:
             'name': emoji_name,
             'description': emoji_desc
         })
+
+        print(f'{emoji_name} {emoji_char}')
 
 
 # Write the list of emojis to a JSON file
